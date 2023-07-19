@@ -2,18 +2,18 @@
 
 int main()
 {
-    int op, direcao, qtdV, maxA, origem, destino, maisAresta, ponderado, pesoAresta;
+    int op, direcao, qtdV, maxA, origem, destino, maisAresta, ponderado, pesoAresta = 1;
     
     printf("-----Matriz de Adjacencia-----\n");
-    printf("Escolha qual tipo do seu grafo: \n");
     printf("0 - Nao Direcional \n");
     printf("1 - Direcional \n");
+    printf("Escolha qual tipo do seu grafo: \n");
     scanf("%d", &direcao);
 
     printf("------------------------------\n");
-    printf("Escolha qual tipo do seu grafo: \n");
     printf("0 - Nao ponderado \n");
     printf("1 - Ponderado \n");
+    printf("Escolha qual tipo do seu grafo: \n");
     scanf("%d", &ponderado);
 
     printf("------------------------------\n");
@@ -39,7 +39,7 @@ int main()
             }
         }
     }
-     //atribuindo 0 a todas as posições da matriz e vetor de graus e vizinhaca
+     //atribuindo 0 a todas as posições da matriz e vetor de graus
     for(int i = 0; i < qtdV; i++){
         for(int j = 0; j < 2; j++){
             grausDirecional[i][j] = 0;
@@ -62,40 +62,21 @@ int main()
         if (origem > qtdV || destino > qtdV || origem < 0 || destino < 0 || i > maxA){
             printf("Aresta inválida!\n");
             i--;
-        }else{
-            if(!ponderado){
-                matriz[origem][destino] = 1;
-                matrizComplementar[origem][destino] = 0;
-                matrizSubjacente[origem][destino] = 1;
-                matrizSubjacente[destino][origem] = 1;
+        }else{            
+            matriz[origem][destino] = pesoAresta;
+            matrizComplementar[origem][destino] = 0;
+            matrizSubjacente[origem][destino] = pesoAresta;
+            matrizSubjacente[destino][origem] = pesoAresta;
                 
-                if (!direcao){
-                    matriz[destino][origem] = 1;
-                    matrizComplementar[destino][origem] = 0;
-                    graus[origem]++;
-                    graus[destino]++;
-                }else{
-                    grausDirecional[origem][0]++;
-                    grausDirecional[destino][1]++;
-                }
+            if (!direcao){
+                matriz[destino][origem] = pesoAresta;
+                matrizComplementar[destino][origem] = 0;
+                graus[origem]++;
+                graus[destino]++;
             }else{
-                matriz[origem][destino] = pesoAresta;
-                matrizComplementar[origem][destino] = 0;
-                matrizSubjacente[origem][destino] = pesoAresta;
-                matrizSubjacente[destino][origem] = pesoAresta;
-                
-                if (!direcao){
-                    matriz[destino][origem] = pesoAresta;
-                    matrizComplementar[destino][origem] = 0;
-                    graus[origem]++;
-                    graus[destino]++;
-                }else{
-                    grausDirecional[origem][0]++;
-                    grausDirecional[destino][1]++;
-                }
-
+                grausDirecional[origem][0]++;
+                grausDirecional[destino][1]++;
             }
-
         } 
         i++;
         tamanho++;
@@ -143,6 +124,9 @@ int main()
                         if(i != j && matriz[i][j] == 1){
                             printf(" %d",j);
                         }
+                        if(direcao && matriz[j][i] == 1){
+                            printf(" %d",j);
+                        }
                     }
                 printf("\n");
                 }
@@ -182,9 +166,8 @@ int main()
                         printf("\n");
                     }
                     }else{
-                        printf("APENAS PARA GRAFOS DIRECIONADOS!!!");
+                        printf("APENAS PARA GRAFOS DIRECIONADOS!!!\n");
                     }
-                    printf("\n");
                 break;
 
             case 0:
