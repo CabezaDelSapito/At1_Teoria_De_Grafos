@@ -3,6 +3,7 @@
 
 typedef struct node {
     int vertex;
+    int pesoAresta;
     struct node* next;
 } node;
 
@@ -11,9 +12,10 @@ typedef struct Graph {
     node** adjLists;
 } Graph;
 
-node* createNode(int v) {
+node* createNode(int v, int pesoAresta) {
     node* newNode = malloc(sizeof(node));
     newNode->vertex = v;
+    newNode->pesoAresta = pesoAresta;
     newNode->next = NULL;
     return newNode;
 }
@@ -30,13 +32,13 @@ Graph* createGraph(int vertices) {
     return graph;
 }
 
-void addEdge(Graph* graph, int src, int dest, int is_directed) {
-    node* newNode = createNode(dest);
+void addEdge(Graph* graph, int src, int dest, int is_directed, int pesoAresta) {
+    node* newNode = createNode(dest, pesoAresta);
     newNode->next = graph->adjLists[src];
     graph->adjLists[src] = newNode;
 
     if (!is_directed) {
-        newNode = createNode(src);
+        newNode = createNode(src, pesoAresta);
         newNode->next = graph->adjLists[dest];
         graph->adjLists[dest] = newNode;
     }
@@ -49,7 +51,7 @@ void printGraph(Graph* graph) {
         node* temp = graph->adjLists[v];
         printf("\nVertice %d-> ", v);
         while (temp) {
-            printf("%d -> ", temp->vertex);
+            printf("%d (%d)-> ", temp->vertex, temp->pesoAresta);
             temp = temp->next;
         }
         printf("\n");
@@ -106,33 +108,25 @@ void grau(Graph* graph, int is_directed) {
         }    
     }
 }
-
+/*
 Graph* complementGraph(Graph *graph) {
     Graph* complement = createGraph(graph->numVertices);
-    
     int v;
     for (v = 0; v < graph->numVertices; v++) {
         node *temp = graph->adjLists[v];
-        
-        // Criar uma matriz booleana para verificar quais vértices já foram adicionados
         int* addedVertices = (int*)calloc(graph->numVertices, sizeof(int));
-        
+
         while (temp) {
             addedVertices[temp->vertex] = 1;
             temp = temp->next;
         }
-        
-        int i;
-        for (i = 0; i < graph->numVertices; i++) {
+        for (int i = 0; i < graph->numVertices; i++) {
             if (i != v && addedVertices[i] == 0) {
                 addEdge(complement, v, i, 0);
             }
-        }
-        
+        }   
         free(addedVertices);
     }
-    
-
     for (v = 0; v < complement->numVertices; v++) {
         node* temp = complement->adjLists[v];
         printf("\nVertice %d-> ", v);
@@ -142,18 +136,36 @@ Graph* complementGraph(Graph *graph) {
         }
         printf("\n");
     }
-    
-    
     return complement;
 }
 
+void listaSubjacente(Graph* graph) {
+    printf("-----Lista de Adjacencia do grafo subjacente-----\n");
+    int v;
+    for (v = 0; v < graph->numVertices; v++) {
+        node* temp = graph->adjLists[v];
+        printf("Vertice %d:", v);
+        while (temp) {
+            //falta fazer a função
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+}
+*/
 int main() {
-    int op, vertices, edges, i, src, dest, is_directed;
+    int op, vertices, edges, i, src, dest, is_directed, ponderado, pesoAresta = 1;
     printf("-----Lista de Adjacencia-----\n");
     printf("0 - Nao orientado \n");
     printf("1 - Orientado \n");
     printf("Escolha qual tipo do seu grafo: \n");
     scanf("%d", &is_directed);
+    printf("------------------------------\n");
+    printf("0 - Nao ponderado \n");
+    printf("1 - Ponderado \n");
+    printf("Escolha qual tipo do seu grafo: \n");
+    scanf("%d", &ponderado);
+    printf("------------------------------\n");
     printf("Digite o numero de vertices: ");
     scanf("%d", &vertices);
     printf("Digite o numero de arestas: ");
@@ -164,8 +176,12 @@ int main() {
     for (i = 0; i < edges; i++) {
         printf("Entre com a aresta %d origem e destino (exemplo: 1 2): ", i);
         scanf("%d %d", &src, &dest);
-        addEdge(graph, src, dest, is_directed);
-        addEdge(vizinho, src, dest, 0);
+        if(ponderado){
+            printf("Digite o peso da aresta: ");
+            scanf("%d", &pesoAresta);
+        }
+        addEdge(graph, src, dest, is_directed, pesoAresta);
+        addEdge(vizinho, src, dest, 0, pesoAresta);
     }
 
     do{
@@ -173,7 +189,8 @@ int main() {
         printf("1- Apresentar a lista resultada do grafo\n");
         printf("2- Apresentar a ordem e o tamanho do grafo\n");
         printf("3- Apresentar a vizinhanca e grau de todos os vertices\n");
-        printf("4- Apresentar Complemento\n");
+        printf("4- Apresentar a lista de adjacencia do grafo complementar\n");
+        printf("5- Apresentar a lista de adjacencia do grafo subjacente (apenas para grafos direcionados)\n");
         printf("0- Sair\n");
         printf("Informe a opcao desejada:\n");
         
@@ -193,9 +210,15 @@ int main() {
                 vizinhaca(vizinho);
                 grau(graph, is_directed);
             break;
-            case 4:
+            /*case 4:
                 complementGraph(graph);
-                break;
+            break;
+            case 5:
+                if (is_directed)
+                    listaSubjacente(graph);
+                else
+                    printf("APENAS PARA GRAFOS DIRECIONADOS!!!\n");
+            break;*/
             case 0:
                 
             break;
